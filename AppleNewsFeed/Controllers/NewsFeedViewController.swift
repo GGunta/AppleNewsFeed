@@ -125,4 +125,21 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
         return 100
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        guard let vc = storyboard.instantiateViewController(identifier: "DetailViewController") as? DetailViewController else {
+            return
+        }
+        
+        let item = items[indexPath.row]
+        vc.contentString = item.description
+        vc.titleString = item.title
+        vc.webURLString = item.url
+        vc.newsImage = item.image
+        
+     //   present(vc, animated: true, completion: nil)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }
