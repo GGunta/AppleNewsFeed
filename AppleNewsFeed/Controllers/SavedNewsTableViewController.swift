@@ -13,10 +13,6 @@ class SavedNewsTableViewController: UITableViewController {
     
     var savedItems = [Items]()
     var context: NSManagedObjectContext?
-    var webURLStringForSource = Int()
-    
-    var webURLString = String()
-    
     
     @IBOutlet weak var edittButtonTitle: UIBarButtonItem!
     
@@ -26,28 +22,27 @@ class SavedNewsTableViewController: UITableViewController {
         tableView.dataSource = self
         tableView.reloadData()
         
-        
-        
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         loadData()
+        countItems()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         loadData()
+        countItems()
     }
     
-    func saveData() {
+    func saveData(){
         do{
             try context?.save()
-            basicAlert(title: "Saved!", message: "To see your saved article, go to Saved tab bar.")
+            basicAlert(title: "Deleted!", message: "You've deleted saved article from CoreData")
         }catch{
             print(error.localizedDescription)
         }
         loadData()
     }
-    
     
     func loadData() {
         let request: NSFetchRequest<Items> = Items.fetchRequest()
@@ -57,24 +52,18 @@ class SavedNewsTableViewController: UITableViewController {
         }catch{
             fatalError("Error in retrieving saved items")
         }
+        tableView.reloadData()
     }
     
-    func deleteData() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
-        let request: NSBatchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        do {
-            try context?.execute(request)
-           // saveData()
-        } catch let error {
-            print(error.localizedDescription)
-        }
+    func countItems() {
+        let itemsInTable = String(self.tableView.numberOfRows(inSection: 0))
+        self.title = "Saved(\(itemsInTable))"
     }
     
     @IBAction func infoButtonTapped(_ sender: Any) {
         basicAlert(title: "Saved articles info", message: "All articles that you saved in Apple News Feed can be found there")
     }
     
-    #warning("try to fix this. edit button should switch title (to save), when changes are done")
     @IBAction func editButtonTapped(_ sender: Any) {
         
         tableView.isEditing = !tableView.isEditing
@@ -85,23 +74,6 @@ class SavedNewsTableViewController: UITableViewController {
         }
     }
     
-    
-   /* @IBAction func deleteArticlesButton(_ sender: Any) {
-     
-     let deleteController = UIAlertController(title: "Delete saved articles", message: "Do you really want to delete all saved articles?" , preferredStyle: .actionSheet)
-     
-     let addDeleteButton = UIAlertAction(title: "Delete", style: .destructive) { alertAction in
-     self.deleteData()
-     }
-     
-     let cancelButton = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-     
-     deleteController.addAction(addDeleteButton)
-     deleteController.addAction(cancelButton)
-     
-     present(deleteController, animated: true, completion: nil)
-     }*/
-    
     // MARK: - Table view data source
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -109,10 +81,13 @@ class SavedNewsTableViewController: UITableViewController {
         return savedItems.count
     }
     
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "savedFeedCell", for: indexPath) as? NewsTableViewCell else{
             return UITableViewCell()
         }
+        
         let item = savedItems[indexPath.row]
         cell.newsTitleLabel.text = item.newsTitle
         cell.newsTitleLabel.numberOfLines = 0
@@ -120,7 +95,6 @@ class SavedNewsTableViewController: UITableViewController {
         if let image = UIImage(data: item.image!){
             cell.newsImageView.image = image
         }
-        
         return cell
     }
     
@@ -128,62 +102,31 @@ class SavedNewsTableViewController: UITableViewController {
         return 100
     }
     
-    #warning("open WebViewController - storyboard ID - to open saved article in web")
-    /*  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-     
-     let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-     guard let viewContr = storyboard.instantiateViewController(identifier: "SavedNewsTableViewController") as? SavedNewsTableViewController else {
-     return
-     }
-     let item = savedItems[indexPath.row]
-     viewContr.webURLString = item.url
-     //use storyboard ID + need to pass = item.url
-     present(viewContr, animated: true, completion: nil)
-     } */
-    
-    
- /*   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            context?.delete(savedItems[indexPath.row])
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        guard let vc = storyboard.instantiateViewController(identifier: "WebViewController") as? WebViewController else {
+            return
         }
-        self.saveData()
+        self.title = "Saved"
         
-    }*/
+        vc.urlString = savedItems[indexPath.row].url ?? "https://blog.thomasnet.com/hs-fs/hubfs/shutterstock_774749455.jpg?width=1200&name=shutterstock_774749455.jpg"
+        navigationController?.pushViewController(vc, animated: true)
+    }
     
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
-        
-        let deleteController = UIAlertController(title: "Delete", message: "Do you really want to delete saved article?" , preferredStyle: .actionSheet)
-        
-        let addDeleteButton = UIAlertAction(title: "Delete", style: .destructive) { alertAction in
-            self.deleteData()
-        }
-        
-        let cancelButton = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-        
-        deleteController.addAction(addDeleteButton)
-        deleteController.addAction(cancelButton)
-        
-        present(deleteController, animated: true, completion: nil)
-        
         if editingStyle == .delete {
+            let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete saved article?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
-            let item = savedItems[indexPath.row]
-            self.context?.delete(item)
-            
+            alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: {_ in
+                let item = self.savedItems[indexPath.row]
+                self.context?.delete(item)
+                self.saveData()
+            }))
+            self.present(alert, animated: true)
         }
-        self.loadData()
-        self.saveData()
     }
-    
-    /* override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == UITableViewCell.EditingStyle.delete {
-     numbers.remove(at: indexPath.row)
-     tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
-     }
-     }*/
-    
     
     
     // Override to support rearranging the table view.
@@ -198,16 +141,5 @@ class SavedNewsTableViewController: UITableViewController {
         // Return false if you do not want the item to be re-orderable.
         return true
     }
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
     
 }

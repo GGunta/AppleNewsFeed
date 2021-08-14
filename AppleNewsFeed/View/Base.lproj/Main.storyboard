@@ -205,7 +205,7 @@
         <!--Web View Controller-->
         <scene sceneID="Ej9-9x-l5b">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="PUy-zH-6gk" customClass="WebViewController" customModule="AppleNewsFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewController" hidesBottomBarWhenPushed="YES" id="PUy-zH-6gk" customClass="WebViewController" customModule="AppleNewsFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="35V-9E-hjM">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -248,6 +248,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="6cD-Ww-Wkh">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" systemColor="systemPurpleColor"/>
                         <textAttributes key="titleTextAttributes">
                             <fontDescription key="fontDescription" name="Charter-Bold" family="Charter" pointSize="24"/>
                         </textAttributes>
@@ -292,6 +293,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="1uS-1f-dbj">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" systemColor="systemPurpleColor"/>
                         <textAttributes key="titleTextAttributes">
                             <fontDescription key="fontDescription" name="Charter-Bold" family="Charter" pointSize="24"/>
                         </textAttributes>
@@ -308,7 +310,7 @@
         <!--Saved News Table View Controller-->
         <scene sceneID="Evz-0M-gh0">
             <objects>
-                <tableViewController storyboardIdentifier="SavedNewsTableViewController" id="klZ-8U-RFq" customClass="SavedNewsTableViewController" customModule="AppleNewsFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="klZ-8U-RFq" customClass="SavedNewsTableViewController" customModule="AppleNewsFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="HMi-Te-O3J">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -362,21 +364,13 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="08h-KL-M0z">
-                        <leftBarButtonItems>
-                            <barButtonItem image="info.circle.fill" catalog="system" id="GI3-r0-V2x">
-                                <color key="tintColor" systemColor="systemPurpleColor"/>
-                                <connections>
-                                    <action selector="infoButtonTapped:" destination="klZ-8U-RFq" id="Cvd-mb-a1o"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem style="plain" systemItem="trash" id="gUD-Lf-AY3">
-                                <color key="tintColor" systemColor="systemPurpleColor"/>
-                                <connections>
-                                    <action selector="deleteArticlesButton:" destination="klZ-8U-RFq" id="t79-g8-vtu"/>
-                                </connections>
-                            </barButtonItem>
-                        </leftBarButtonItems>
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="edit" id="i8I-C6-Hsg">
+                        <barButtonItem key="leftBarButtonItem" image="info.circle.fill" catalog="system" id="GI3-r0-V2x">
+                            <color key="tintColor" systemColor="systemPurpleColor"/>
+                            <connections>
+                                <action selector="infoButtonTapped:" destination="klZ-8U-RFq" id="Cvd-mb-a1o"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="i8I-C6-Hsg">
                             <connections>
                                 <action selector="editButtonTapped:" destination="klZ-8U-RFq" id="h15-uR-eJB"/>
                             </connections>

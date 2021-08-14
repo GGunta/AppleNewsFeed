@@ -20,7 +20,7 @@ class NewsFeedViewController: UIViewController {
         super.viewDidLoad()
         self.title = "Apple news"
         activityIndicatorView.isHidden = true
-        
+        handleGetData()
     }
     
     func activityIndicator(animated: Bool){
@@ -41,11 +41,11 @@ class NewsFeedViewController: UIViewController {
     }
     
     @IBAction func getDataTapped(_ sender: Any) {
-        self.activityIndicator(animated: true)
-        handleGetData()
+       handleGetData()
     }
     
     func handleGetData(){
+        self.activityIndicator(animated: true)
         let jsonUrl = "https://newsapi.org/v2/everything?q=apple&from=2021-08-01&to=2021-08-08&sortBy=popularity&apiKey=1920b7f830414a5bb662b581372ff993"
         
         guard let url = URL(string: jsonUrl) else {return}
